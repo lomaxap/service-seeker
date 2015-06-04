@@ -1,0 +1,10 @@
+*.ipynb
+.idea
+*.pyc
+local_static
+.local-cache/
+*.log
+.venv
+.local-cache
+.DS_Store
+settings/prod.py
