@@ -1,0 +1,636 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Service Seeker Lite API
+  description: Seek and ye shall find.
+  version: "0.0.0"
+# the domain of the service
+host: unknown
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /
+produces:
+  - application/json
+paths:
+  /organizations:
+    get:
+      summary: Human Services Organizations
+      description: |
+        Returns list of all human service organizations from database. Limits to 30
+      parameters:
+        - name: name
+          in: query
+          description: Name of the organization
+          type: string
+      tags:
+        - Organizations
+      responses:
+        200:
+          description: An array of organizations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Organization'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /organizations/{organizationId}:
+    get:
+      tags:
+        - Organizations
+      summary: Find Organization by ID
+      description: Returns a single organization
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Organization'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Organization not found
+  /organizations/{organizationId}/services:
+    get:
+      tags:
+      - Organizations
+      - Services
+      summary: Find all services for an organization
+      description: Returns an array of services
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Service'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: No services found
+  /organizations/{organizationId}/locations:
+    get:
+      tags:
+      - Organizations
+      - Locations
+      summary: Find all services for an organization
+      description: Returns an array of services
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Location'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: No locations found
+  /organizations/{organizationId}/contacts:
+    get:
+      tags:
+        - Organizations
+        - Contacts
+      summary: Find all contacts for an organization
+      description: Returns an array of contacts
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Contact'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: No locations found
+  /services:
+    get:
+      tags:
+      - Services
+      summary: Services offered
+      description: |
+        A list of all the services offered
+      parameters:
+      - name: categoryId
+        type: integer
+        in: query
+        description: Id of category of the service. Defaults to Open Eligibility 'Human Services' http://openeligibility.org/
+      - name: categories
+        type: array
+        in: query
+        description: "Categories to filter by"
+        items:
+          type: string
+      - name: tags
+        type: array
+        in: query
+        description: "Tags to filter by"
+        items:
+          type: string
+      - name: age
+        type: integer
+        in: query
+        description: Age of person seeking services. Excludes services that have age requirements outside of seeker's age.
+      - name: household
+        type: string
+        in: query
+        enum:
+        - individual
+        - family
+        description: Describes whether seeker is looking for invidual services or household services. Excludes services that only offer service outside of the seekers household.
+      - name: monthly_income
+        type: number
+        in: query
+        format: float
+        description: Monthly income of seeker. Excludes services that restrict income above or below seeker's monthly income.
+      - name: percent_poverty
+        type: number
+        in: query
+        format: float
+        description: Percent poverty of the seeker. Excludes services that restrict services to people falling below or above seekers poverty line.
+      - name: disability
+        type: string
+        in: query
+        description: Disability of seeker. Excludes services that require certain disability the seeker does not have. Must specify 'none', otherwise query excludes nothing.
+        items:
+          type: string
+          enum:
+          - none
+          - any
+          - learning
+          - developmental
+          - physical
+          - intellectual
+          - mobility
+          - hearing
+          - vision
+          - mental illness
+      - name: gender
+        type: string
+        in: query
+        description: Gender of seeker. Excludes services that restrict services to gender other than that of the seeker's.
+        enum:
+          - male
+          - female
+          - transgender
+      - name: near
+        in: query
+        description: latitude and longitude of location. defaults to .5 mile radius
+        type: array
+        items:
+          type: number
+          format: decimal
+      responses:
+        200:
+          description: An array of Services
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Service'
+  /services/{serviceId}:
+    get:
+      tags:
+      - Services
+      summary: Find service by ID
+      description: Returns a single service
+      parameters:
+      - name: serviceId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Service'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Service not found
+  /location:
+    get:
+      tags:
+      - Locations
+      summary: Human Services Organizations
+      description: |
+        Returns list of all locations from database. Limits to 30
+      parameters:
+        - name: near
+          in: query
+          description: latitude and longitude of location. defaults to .5 mile radius
+          type: array
+          items:
+            type: number
+            format: decimal
+      tags:
+        - Organizations
+      responses:
+        200:
+          description: An array of organizations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Location'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /location/{locationId}:
+    get:
+      tags:
+      - Locations
+      summary: Find location by ID
+      description: Returns a single location
+      parameters:
+      - name: locationId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Location'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Location not found
+  /contact:
+    get:
+      tags:
+      - Contacts
+      summary: Contacts
+      description: |
+        Returns list of all contacts from database. Limits to 30
+      parameters:
+        - name: name
+          in: query
+          description: Name of the contact
+          type: string
+      tags:
+        - Contact
+      responses:
+        200:
+          description: An array of contacts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Contact'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /contact/{contactId}:
+    get:
+      tags:
+      - Contacts
+      summary: Find contact by ID
+      description: Returns a single contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Contact'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Contact not found
+  /categories:
+    get:
+      tags:
+      - Categories
+      summary: Reference list of all categories in database. Defaults to Open Eligibility categories
+      description: |
+        Returns list of all human service organizations from database. Limits to 30
+      parameters:
+        - name: name
+          in: query
+          description: Name of the organization
+          type: string
+      tags:
+        - Categories
+      responses:
+        200:
+          description: An array of categories
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Category'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+definitions:
+  Organization:
+    properties:
+      id:
+        type: string
+        description: Unique identifier representing a specific organization
+      description:
+        type: string
+        description: Description of Organization
+      name:
+        type: string
+        description: Name of Organization.
+      email:
+        type: string
+        description: Main email address of organization
+      primary_phone_id:
+        type: string
+        description: Reference to primary phone number for organization
+      url:
+        type: string
+        description: Main url of organization
+      parent_organization_id:
+        type: string
+        description: Unique identifier of parent organization
+      services:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Service'
+      locations:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Location'
+      contacts:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Contact'
+  Service:
+    properties:
+      id:
+        type: string
+        description: Unique identifier representing a specific service at a specific organizations
+      organization_id:
+        type: string
+        description: Unique identifier of organization offering service
+      locations:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Location'
+      required_documents:
+        type: array
+        description: List of documents required to receive services
+        items:
+          type: string
+          enum:
+            - Photo ID
+      application_process:
+        type: string
+        description: Description of process to get access to organization. e.g Call ahead of time to schedule intake.
+      description:
+        type: string
+        description: General Description of service
+      eligibility:
+        type: array
+        description: reference to all eligibility requirements. assumes OR relationship between each record
+        items:
+          $ref: '#/definitions/Eligibility'
+      tags:
+        type: string
+        description: Comma separated list of tags from Open Eligibility 'Human Situations' list http://openeligibility.org/situations/
+      hours:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Hours'
+      contacts:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Contact'
+      phones:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Phone'
+  Location:
+    properties:
+      id:
+        type: string
+        description: Unique identifier representing a specific location at a specific organization
+      organization_id:
+        type: string
+        description: Unique identifier for organization
+      name:
+        type: string
+        description: Name of location, if applicable.
+      description:
+        type: string
+        description: Description of location including handicap access and geographic details
+      address_1:
+        type: string
+        description: The primary part of the Street Address
+      address_2:
+        type: string
+        description: The secondary part of the Street Address, such as the Suite, Room, or Floor number
+      city:
+        type: string
+      state_province:
+        type: string
+        description: 2-letter US state_province abbreviation
+      country:
+        type: string
+        description: 2-letter ISO 3361-1 country code
+      postal_code:
+        type: string
+        description: US 5 or 9-digit ZIP code. 9-digit ZIP codes are separated with a dash
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+      transportation:
+        type: string
+        description: List of bus routes or transportation options to this location
+      services:
+        type: array
+        description: array of all the unique identifiers of all locations that offer this service
+        items:
+          $ref: '#/definitions/Service'
+  Contact:
+    required:
+      - organization_id
+    properties:
+      id:
+        type: string
+      organization_id:
+        type: string
+      location_id:
+        type: string
+      service_id:
+        type: string
+      name:
+        type: string
+      title:
+        type: string
+      email:
+        type: string
+  Phone:
+    required:
+      - organization_id
+    properties:
+      id:
+        type: string
+      service_id:
+        type: string
+      organization_id:
+        type: string
+      contact_id:
+        type: string
+      number:
+        type: string
+        description: The 10-digit US phone number.
+      vanity_number:
+        type: string
+        description: The 10-digit US phone number with vanity letters.
+      extension:
+        type: string
+      type:
+        type: string
+        enum:
+          - voice
+          - text
+          - fax
+          - hoteline
+          - tty
+  Hours:
+    properties:
+      id:
+        type: string
+      service_id:
+        type: string
+      location_id:
+        type: string
+      every:
+        type: string
+        description: Comma separated list of monthly
+        enum:
+          - First
+          - Second
+          - Third
+          - Fourth
+      weekday:
+        type: string
+        enum:
+          - Monday
+          - Tuesday
+          - Wednesday
+          - Thursday
+          - Friday
+          - Saturday
+          - Sunday
+      opens_at:
+        type: string
+        format: dateTime
+        description: Time of day service/location opens
+      closes_at:
+        type: string
+        format: dateTime
+        description: Time of day service/location closes
+  Category:
+    properties:
+      id:
+        type: integer
+        description: Id of category from Open Eligibility spec
+      title:
+        type: string
+        description: name of Category from Open Eligibility spec
+      level:
+        type: string
+        enum:
+        - First
+        - Second
+        - Third
+        - Fourth
+  Eligibility:
+    properties:
+      service_id:
+        type: string
+      age_range:
+        type: array
+        description: 2 values that specify min and max age range, respectively. If no second value is specified, assumes min range.
+        items:
+          type: number
+          format: integer
+      disability:
+        type: array
+        items:
+            type: string
+            enum:
+            - None
+            - Any
+            - Learning
+            - Developmental
+            - Physical
+            - Intellectual
+            - Mobility
+            - Hearing
+            - Vision
+            - Mental Illness
+      gender:
+        type: array
+        items:
+          type: string
+          enum:
+          - Male
+          - Female
+          - Transgender
+      household:
+        type: array
+        items:
+          type: string
+          enum:
+          - Individual
+          - Household
+      monthly_income_range:
+        type: array
+        description: 2 values that specify min and max monthly range, respectively. If no second value is specified, assumes min range.
+        items:
+            type: number
+            format: float
+      percent_poverty_range:
+        type: array
+        description: 2 values that specify min and max percent poverty range, respectively. If no second value is specified, assumes min range.
+        items:
+          type: number
+          format: float
+  Error:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
